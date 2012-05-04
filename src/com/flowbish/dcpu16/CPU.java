@@ -109,6 +109,24 @@ public class CPU {
 			}
 			cycles += 3;
 			break;
+		// MOD b, a
+		case 0x08:
+			if (a_value == 0)
+				memory.setAddress(b_addr, 0);
+			else
+				memory.setAddress(b_addr, b_value % a_value);
+			cycles += 3;
+			break;
+		// AND b, a
+		case 0x0a:
+			memory.setAddress(b_addr, a_value & b_value);
+			cycles += 1;
+			break;
+		// BOR b, a
+		case 0x0b:
+			memory.setAddress(b_addr, a_value | b_value);
+			cycles += 1;
+			break;
 		}
 	}
 	
@@ -122,7 +140,7 @@ public class CPU {
 	}
 	
 	/**
-	 * Returns a memory address that contains the value of the specified operand
+	 * Returns a memory address that contains the value of the specified operand.
 	 * @param a  operand
 	 * @return memory address to access <code>a<code>
 	 */

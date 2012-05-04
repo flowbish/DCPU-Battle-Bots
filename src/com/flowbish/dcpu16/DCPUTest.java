@@ -69,7 +69,7 @@ public class DCPUTest extends TestCase {
 		 * Result:
 		 * 		A = 0x13
 		 * 		B = 0x04
-		 * 		PC = 0002
+		 * 		PC = 0x02
 		 * 		cycles = 2
 		 */
 		cpu.step();
@@ -84,7 +84,7 @@ public class DCPUTest extends TestCase {
 		 * Result:
 		 * 		A = 0x13
 		 * 		B = 0x17
-		 * 		PC = 3
+		 * 		PC = 0x03
 		 * 		cycles = 4
 		 */
 		cpu.step();
@@ -99,7 +99,7 @@ public class DCPUTest extends TestCase {
 		 * Result:
 		 * 		A = 0x13
 		 * 		B = 0x11
-		 * 		PC = 4
+		 * 		PC = 0x04
 		 * 		cycles = 6
 		 */
 		cpu.step();
@@ -113,7 +113,7 @@ public class DCPUTest extends TestCase {
 		 * Result:
 		 * 		A = 0x143
 		 * 		B = 0x11
-		 * 		PC = 5
+		 * 		PC = 0x05
 		 * 		cycles = 8
 		 */
 		cpu.step();
@@ -128,7 +128,7 @@ public class DCPUTest extends TestCase {
 		 * 		A = 0x0a
 		 * 		B = 0x11
 		 * 		EX = 0x1800
-		 * 		PC = 7
+		 * 		PC = 0x07
 		 * 		cycles = 12
 		 */
 		cpu.step();
@@ -137,6 +137,54 @@ public class DCPUTest extends TestCase {
 		assertEquals(0x1800, mem.getEX());
 		assertEquals(0x7, mem.getPC());
 		assertEquals(12, cpu.getCycles());
+		
+		/*
+		 * Runs "DIV A, 0x20"
+		 * Result:
+		 * 		A = 0x0a
+		 * 		B = 0x07
+		 * 		EX = 0x1800
+		 * 		PC = 0x08
+		 * 		cycles = 15
+		 */
+		cpu.step();
+		assertEquals(0x0a, mem.getA());	
+		assertEquals(0x07, mem.getB());	
+		assertEquals(0x1800, mem.getEX());
+		assertEquals(0x8, mem.getPC());
+		assertEquals(15, cpu.getCycles());
+		
+		/*
+		 * Runs "AND B, 0x5"
+		 * Result:
+		 * 		A = 0x0a
+		 * 		B = 0x05
+		 * 		EX = 0x1800
+		 * 		PC = 0x09
+		 * 		cycles = 16
+		 */
+		cpu.step();
+		assertEquals(0x0a, mem.getA());	
+		assertEquals(0x05, mem.getB());	
+		assertEquals(0x1800, mem.getEX());
+		assertEquals(0x9, mem.getPC());
+		assertEquals(16, cpu.getCycles());
+		
+		/*
+		 * Runs "BOR B, 0x10"
+		 * Result:
+		 * 		A = 0x0a
+		 * 		B = 0x15
+		 * 		EX = 0x1800
+		 * 		PC = 0x0a
+		 * 		cycles = 17
+		 */
+		cpu.step();
+		assertEquals(0x0a, mem.getA());	
+		assertEquals(0x15, mem.getB());	
+		assertEquals(0x1800, mem.getEX());
+		assertEquals(0xa, mem.getPC());
+		assertEquals(17, cpu.getCycles());
 	}
 	
 	@Test
