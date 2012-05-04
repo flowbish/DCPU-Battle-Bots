@@ -185,6 +185,8 @@ public class DCPUTest extends TestCase {
 		assertEquals(0x1800, mem.getEX());
 		assertEquals(0xa, mem.getPC());
 		assertEquals(17, cpu.getCycles());
+		
+		//TODO: Test for JSR and SET PC, a
 	}
 	
 	@Test

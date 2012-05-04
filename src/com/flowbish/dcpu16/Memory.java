@@ -1,5 +1,10 @@
 package com.flowbish.dcpu16;
 
+/**
+ * Memory storage thingy for DCPU-16
+ * @author Flowbish
+ *
+ */
 public class Memory {
 	private char[] memory;
 	
@@ -92,6 +97,27 @@ public class Memory {
 	
 	public void setEX(int value) {
 		setAddress(EX, value);
+	}
+	
+	public char getSP() {
+		return getAddress(SP);
+	}
+	
+	public void setSP(int value) {
+		setAddress(SP, value);
+	}
+	
+	public void stackPush(int value) {
+		int sp = getSP() - 1;
+		setAddress(getAddress(sp), value);
+		setSP(sp);
+	}
+	
+	public char stackPop() {
+		char sp = getSP();
+		setSP(sp + 1);
+		return getAddress(sp);
+		
 	}
 	
 	public char getA() {

@@ -1,7 +1,5 @@
 package com.flowbish.dcpu16;
 
-import com.sun.xml.internal.ws.api.pipe.NextAction;
-
 /**
  * CPU of the DCPU-16
  * @author Flowbish
@@ -136,7 +134,16 @@ public class CPU {
 	 * @param a - the a value of the instruction (upper 6 bits)
 	 */
 	private void nonBasicOp(char opcode, char a) {
-		//TODO
+		int a_addr = operand(a);
+		char a_value = memory.getAddress(a_addr);
+		switch (opcode) {
+		// JSR a
+		case 0x01:
+			memory.stackPush(memory.getPC() + 1);
+			memory.setPC(a_value);
+			cycles += 3;
+			break;
+		}
 	}
 	
 	/**
@@ -154,6 +161,9 @@ public class CPU {
 		else if (a < 0x18) {
 			char word =memory.nextWord();
 			return memory.getAddress(memory.MEMORY_SIZE + a - 0x10) + word;
+		}
+		else if (a == 0x1c) {
+			return memory.PC;
 		}
 		else if (a  == 0x1f) {
 			char pc = memory.getPC();
