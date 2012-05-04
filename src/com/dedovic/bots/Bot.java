@@ -29,14 +29,24 @@ public class Bot {
 	}
 	
 	/**
-	 * Check if this bot interests with the body of the provided bot.
-	 * @param bot - The bot to check if it intersects with this one.
-	 * @return True if the bots do intersect, false otherwise.
+	 * Check if this bot interests with the body of the provided bot
+	 * @param bot - The bot to check if it intersects with this one
+	 * @return True if the bots do intersect, false otherwise
 	 */
 	public boolean intesects(Bot bot){
 		return this.body.intersects(bot.body);
 	}
+	/**
+	 * Decrements health by 1 unit
+	 */
 	public void collide() {
 		health--;		
 	}	
+	/**
+	 * Check if health is at or below 0
+	 * @return True if health is at or below 0, false otherwise
+	 */
+	public boolean isDead(){
+		return health <= 0;
+	}
 }

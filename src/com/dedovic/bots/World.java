@@ -18,6 +18,7 @@ public class World {
 	
 	public void update(GameContainer container, int delta) throws SlickException {
 		checkCollisions();
+		checkDead();
 		
 		for (Bot b : bots) {
 			b.update(container, delta);
@@ -29,9 +30,16 @@ public class World {
 		}
 	}
 	
+	/**
+	 * Add new bot to this world
+	 * @param b - The new bot
+	 */
 	public void add(Bot b){
 		bots.add(b);
 	}
+	/**
+	 * Check collisions of all bots in this world. Calls collide() if two bots collide.
+	 */
 	private void checkCollisions(){
 		for (int i = 0; i < bots.size(); i++) {
 			for (int j = 0; j < bots.size(); j++) {
@@ -39,6 +47,15 @@ public class World {
 					bots.get(i).collide();
 			}
 			
+		}
+	}
+	/**
+	 * Check health of all bots in this world. Removes any that are dead.
+	 */
+	private void checkDead(){
+		for (Bot b : bots) {
+			if(b.isDead())
+				bots.remove(b);
 		}
 	}
 
