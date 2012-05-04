@@ -52,15 +52,91 @@ public class DCPUTest extends TestCase {
 		
 		
 		/*
-		 * Should run "SET A, 0x13"
+		 * Runs "SET A, 0x13"
 		 * Result:
-		 * 		A =13
-		 * 		PC = 1
+		 * 		A = 0x13
+		 * 		PC = 0x01
 		 * 		cycles = 1
 		 */
 		cpu.step();
-		assertEquals(0x1, mem.getPC());
 		assertEquals(0x13, mem.getA());	
+		assertEquals(0x1, mem.getPC());
+		assertEquals(1, cpu.getCycles());
+		
+		
+		/*
+		 * Runs "SET B, 0x04"
+		 * Result:
+		 * 		A = 0x13
+		 * 		B = 0x04
+		 * 		PC = 0002
+		 * 		cycles = 2
+		 */
+		cpu.step();
+		assertEquals(0x13, mem.getA());	
+		assertEquals(0x04, mem.getB());	
+		assertEquals(0x2, mem.getPC());
+		assertEquals(2, cpu.getCycles());
+		
+		
+		/*
+		 * Runs "ADD B, A"
+		 * Result:
+		 * 		A = 0x13
+		 * 		B = 0x17
+		 * 		PC = 3
+		 * 		cycles = 4
+		 */
+		cpu.step();
+		assertEquals(0x13, mem.getA());	
+		assertEquals(0x17, mem.getB());	
+		assertEquals(0x3, mem.getPC());
+		assertEquals(4, cpu.getCycles());
+		
+		
+		/*
+		 * Runs "SUB B, 6"
+		 * Result:
+		 * 		A = 0x13
+		 * 		B = 0x11
+		 * 		PC = 4
+		 * 		cycles = 6
+		 */
+		cpu.step();
+		assertEquals(0x13, mem.getA());	
+		assertEquals(0x11, mem.getB());	
+		assertEquals(0x4, mem.getPC());
+		assertEquals(6, cpu.getCycles());
+		
+		/*
+		 * Runs "MUL A, B"
+		 * Result:
+		 * 		A = 0x143
+		 * 		B = 0x11
+		 * 		PC = 5
+		 * 		cycles = 8
+		 */
+		cpu.step();
+		assertEquals(0x143, mem.getA());	
+		assertEquals(0x11, mem.getB());	
+		assertEquals(0x5, mem.getPC());
+		assertEquals(8, cpu.getCycles());
+		
+		/*
+		 * Runs "DIV A, 0x20"
+		 * Result:
+		 * 		A = 0x0a
+		 * 		B = 0x11
+		 * 		EX = 0x1800
+		 * 		PC = 7
+		 * 		cycles = 12
+		 */
+		cpu.step();
+		assertEquals(0x0a, mem.getA());	
+		assertEquals(0x11, mem.getB());	
+		assertEquals(0x1800, mem.getEX());
+		assertEquals(0x7, mem.getPC());
+		assertEquals(12, cpu.getCycles());
 	}
 	
 	@Test

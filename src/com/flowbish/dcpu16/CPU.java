@@ -1,5 +1,13 @@
 package com.flowbish.dcpu16;
 
+import com.sun.xml.internal.ws.api.pipe.NextAction;
+
+/**
+ * CPU of the DCPU-16
+ * @author Flowbish
+ * @version not finished yet
+ *
+ */
 public class CPU {
 	private Memory memory;
 	private long cycles;
@@ -9,6 +17,12 @@ public class CPU {
 		reset();
 	}
 	
+	/**
+	 * Loads a program from a byte array and pushes it into
+	 * memory starting at 0x0000
+	 * @param program - byte array of instructions, two bytes
+	 * 	                per instruction
+	 */
 	public void loadProgram(byte[] program) {
 		for (int i = 0; i < program.length; i += 2) {
 			char value = (char) ((program[i]) << 8);
@@ -50,15 +64,50 @@ public class CPU {
 		char b_value = memory.getAddress(b_addr);
 		char a_value = memory.getAddress(a_addr);
 		switch(opcode) {
+		// SET b, a
 		case 0x01:
 			memory.setAddress(b_addr, a_value);
 			cycles += 1;
 			break;
+		// ADD b, a
 		case 0x02:
-			int sum = b + a;
+			int sum = b_value + a_value;
 			if (sum > 0xffff) 
 				memory.setAddress(memory.EX, 0x0001);
+			else
+				memory.setAddress(memory.EX, 0x0000);
+			memory.setAddress(b_addr, sum);
 			cycles += 2;
+			break;
+		// SUB b, a
+		case 0x03:
+			int dif = b_value - a_value;
+			if (dif < 0x0) 
+				memory.setAddress(memory.EX, 0xffff);
+			else
+				memory.setAddress(memory.EX, 0x0000);
+			memory.setAddress(b_addr, dif);
+			cycles += 2;
+			break;
+		// MUL b, a
+		case 0x04:
+			int prod = b_value * a_value;
+			memory.setAddress(memory.EX, (prod >> 16) & 0xffff);
+			memory.setAddress(b_addr, prod);
+			cycles += 2;
+			break;
+		// DIV b, a
+		case 0x06:
+			int div = b_value / a_value;
+			if (a != 0x0) {
+				memory.setEX(((b_value << 16) / a_value) & 0xffff);
+				memory.setAddress(b_addr, div);
+			}
+			else {
+				memory.setAddress(memory.EX, 0x0000);
+				memory.setAddress(b_addr, 0x0);
+			}
+			cycles += 3;
 			break;
 		}
 	}
@@ -88,6 +137,12 @@ public class CPU {
 			char word =memory.nextWord();
 			return memory.getAddress(memory.MEMORY_SIZE + a - 0x10) + word;
 		}
+		else if (a  == 0x1f) {
+			char pc = memory.getPC();
+			memory.setPC(pc + 1);
+			cycles += 1;
+			return pc;
+		}
 		else {
 			a -= 0x21;
 			memory.setAddress(memory.A_TEMP, a);
@@ -99,5 +154,9 @@ public class CPU {
 	 */
 	public Memory getMemory() {
 		return memory;
+	}
+	
+	public long getCycles() {
+		return cycles;
 	}
 }

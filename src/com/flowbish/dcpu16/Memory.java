@@ -82,8 +82,16 @@ public class Memory {
 		return getAddress(PC);
 	}
 	
-	public void setPC(char addr) {
+	public void setPC(int addr) {
 		setAddress(PC, addr);
+	}
+	
+	public char getEX() {
+		return getAddress(EX);
+	}
+	
+	public void setEX(int value) {
+		setAddress(EX, value);
 	}
 	
 	public char getA() {
