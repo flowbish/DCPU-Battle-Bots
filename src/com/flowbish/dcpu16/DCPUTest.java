@@ -42,12 +42,25 @@ public class DCPUTest extends TestCase {
 	
 	@Test
 	public void testCPUStep() {
+		/*
+		 * Pre-test sanitation checks
+		 */
 		assertEquals(0xd001, mem.getAddress(0x0000));
-		assertEquals(0x0 , cpu.getRegisters()[0]);
+		assertEquals(0x0 , mem.getA());
+		assertEquals(0x0, mem.getPC());
+		assertEquals(0xffff, mem.getAddress(mem.SP));
 		
+		
+		/*
+		 * Should run "SET A, 0x13"
+		 * Result:
+		 * 		A =13
+		 * 		PC = 1
+		 * 		cycles = 1
+		 */
 		cpu.step();
-		assertEquals(0x1, cpu.getPC());
-		assertEquals(0x13, cpu.getRegisters()[0]);
+		assertEquals(0x1, mem.getPC());
+		assertEquals(0x13, mem.getA());	
 	}
 	
 	@Test
