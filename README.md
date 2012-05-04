@@ -5,7 +5,7 @@ Battling bots on a DCPU system
 
 DCPU emulator written by *Flowbish* (aka Porter Smith)
 
-Battle Bots game written by *Stevan Dedovic* and *Robert Andrews*
+Battle Bots game written by *Stevan Dedovic*
 
 DCPU
 ================
