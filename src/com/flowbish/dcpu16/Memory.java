@@ -32,15 +32,6 @@ public class Memory {
 	
 	/**
 	 * Sets memory address <code>addr</code> to <code>value</code>
-	 * @param addr - Memory address to write to
-	 * @param value - 16 bit integer to write
-	 */
-	public void setAddress(char addr, char value) {
-		memory[addr] = value;
-	}
-	
-	/**
-	 * Sets memory address <code>addr</code> to <code>value</code>
 	 * @param addr - memory address to write to
 	 * @param value - 16 bit integer to write
 	 */
@@ -49,15 +40,6 @@ public class Memory {
 			memory[addr] = (char)value;
 		else throw new IndexOutOfBoundsException();
 		
-	}
-	
-	/**
-	 * Returns the value at memory address <code>addr</code>
-	 * @param addr - memory address to return
-	 * @return 16 bit integer
-	 */
-	public char getAddress(char addr) {
-		return memory[addr];
 	}
 	
 	/**
@@ -122,27 +104,51 @@ public class Memory {
 	
 	public char getA() {
 		return getAddress(A);
-	}	
+	}
+	public void setA(int value) {
+		setAddress(A, value);
+	}
 	public char getB() {
 		return getAddress(B);
 	}	
+	public void setB(int value) {
+		setAddress(B, value);
+	}
 	public char getC() {
 		return getAddress(C);
 	}	
+	public void setC(int value) {
+		setAddress(C, value);
+	}
 	public char getX() {
 		return getAddress(X);
 	}	
+	public void setX(int value) {
+		setAddress(X, value);
+	}
 	public char getY() {
 		return getAddress(Y);
 	}	
+	public void setY(int value) {
+		setAddress(Y, value);
+	}
 	public char getZ() {
 		return getAddress(Z);
 	}	
+	public void setZ(int value) {
+		setAddress(Z, value);
+	}
 	public char getI() {
 		return getAddress(I);
 	}	
+	public void setI(int value) {
+		setAddress(I, value);
+	}
 	public char getJ() {
 		return getAddress(J);
+	}
+	public void setJ(int value) {
+		setAddress(J, value);
 	}
 
 }

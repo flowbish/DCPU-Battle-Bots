@@ -1,16 +1,19 @@
 package com.flowbish.dcpu16;
 
+import java.util.ArrayList;
+
 /**
  * CPU of the DCPU-16
  * @author Flowbish
  * @version not finished yet
  *
  */
-public class CPU {
+public class DCPU {
 	private Memory memory;
+	private ArrayList<Hardware> hardware;	
 	private long cycles;
 	
-	public CPU() {
+	public DCPU() {
 		memory = new Memory();
 		reset();
 	}
@@ -162,8 +165,20 @@ public class CPU {
 			char word =memory.nextWord();
 			return memory.getAddress(memory.MEMORY_SIZE + a - 0x10) + word;
 		}
+		else if (a == 0x1b) {
+			return memory.SP;
+		}
 		else if (a == 0x1c) {
 			return memory.PC;
+		}
+		else if (a == 0x1d) {
+			return memory.EX;
+		}
+		else if (a  == 0x1e) {
+			char pc = memory.getPC();
+			memory.setPC(pc + 1);
+			cycles += 1;
+			return memory.getAddress(pc);
 		}
 		else if (a  == 0x1f) {
 			char pc = memory.getPC();
@@ -177,8 +192,18 @@ public class CPU {
 			return memory.A_TEMP;
 		}
 	}
+	
+	/**
+	 * Send an interrupt to the DCPU
+	 * @param message - 16 bit word message
+	 */
+	public void sendInterrupt(char message) {
+		//TODO: 
+	}
+	
 	/**
 	 * Returns instance of Memory used by this CPU
+	 * @return instance of Memory used by this CPU
 	 */
 	public Memory getMemory() {
 		return memory;

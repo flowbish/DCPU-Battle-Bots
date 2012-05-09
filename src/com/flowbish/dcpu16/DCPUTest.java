@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 
 @RunWith(JUnit4.class)
 public class DCPUTest extends TestCase {
-	private CPU cpu;
+	private DCPU cpu;
 	private Memory mem;
 	
 	@Rule
@@ -23,7 +23,7 @@ public class DCPUTest extends TestCase {
 	
 	@Before
 	public void setup() {
-		cpu = new CPU();
+		cpu = new DCPU();
 		mem= cpu.getMemory();
 		byte[] program = null;
 		try {
@@ -186,7 +186,9 @@ public class DCPUTest extends TestCase {
 		assertEquals(0xa, mem.getPC());
 		assertEquals(17, cpu.getCycles());
 		
-		//TODO: Test for JSR and SET PC, a
+		/*
+		 * TODO: Test JSR, SP, PC, EX, word, [word]
+		 */
 	}
 	
 	@Test
