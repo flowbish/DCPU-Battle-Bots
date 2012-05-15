@@ -186,6 +186,41 @@ public class DCPUTest extends TestCase {
 		assertEquals(0xa, mem.getPC());
 		assertEquals(17, cpu.getCycles());
 		
+		
+		/*
+		 * Runs "SET PUSH, 0x3"
+		 * Result:
+		 * 		A = 0x0a
+		 * 		B = 0x15
+		 * 		EX = 0x1800
+		 * 		PC = 0x0b
+		 * 		cycles = 18
+		 *      [SP] = 0x3	 
+		 */
+		cpu.step();
+		assertEquals(0x0a, mem.getA());	
+		assertEquals(0x15, mem.getB());	
+		assertEquals(0x1800, mem.getEX());
+		assertEquals(0xb, mem.getPC());
+		assertEquals(18, cpu.getCycles());
+		assertEquals(0x3, mem.stackPeek(0));
+		
+		/*
+		 * Runs "SET PC, POP"
+		 * Result:
+		 * 		A = 0x0a
+		 * 		B = 0x15
+		 * 		EX = 0x1800
+		 * 		PC = 0x03
+		 * 		cycles = 19
+		 */
+		cpu.step();
+		assertEquals(0x0a, mem.getA());	
+		assertEquals(0x15, mem.getB());	
+		assertEquals(0x1800, mem.getEX());
+		assertEquals(0x3, mem.getPC());
+		assertEquals(18, cpu.getCycles());
+		
 		/*
 		 * TODO: Test JSR, SP, PC, EX, word, [word]
 		 */
