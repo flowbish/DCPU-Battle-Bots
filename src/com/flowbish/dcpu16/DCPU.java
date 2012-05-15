@@ -41,7 +41,7 @@ public class DCPU {
 	private void reset() {
 		memory = new Memory();
 		registers = new char[8];
-		SP = 0xffff;
+		SP = 0x0;
 		PC = 0x0;
 		EX = 0x0;
 		cycles = 0;

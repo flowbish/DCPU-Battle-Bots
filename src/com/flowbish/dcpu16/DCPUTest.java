@@ -48,7 +48,7 @@ public class DCPUTest extends TestCase {
 		assertEquals(0xd001, mem.getAddress((char) 0x0000));
 		assertEquals(0x0 , cpu.getA());
 		assertEquals(0x0, cpu.getPC());
-		assertEquals(0xffff, cpu.getSP());
+		assertEquals(0x0, cpu.getSP());
 		
 		
 		/*
@@ -195,6 +195,7 @@ public class DCPUTest extends TestCase {
 		 * 		EX = 0x1800
 		 * 		PC = 0x0b
 		 * 		cycles = 18
+		 * 		SP = 0xffff
 		 *      [SP] = 0x3	 
 		 */
 		cpu.step();
@@ -203,6 +204,7 @@ public class DCPUTest extends TestCase {
 		assertEquals(0x1800, cpu.getEX());
 		assertEquals(0xb, cpu.getPC());
 		assertEquals(18, cpu.getCycles());
+		assertEquals(0xffff, cpu.getSP());
 		assertEquals(0x3, mem.getAddress(cpu.getSP()));
 		
 		/*
