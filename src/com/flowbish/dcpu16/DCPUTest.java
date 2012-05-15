@@ -45,10 +45,10 @@ public class DCPUTest extends TestCase {
 		/*
 		 * Pre-test sanitation checks
 		 */
-		assertEquals(0xd001, mem.getAddress(0x0000));
-		assertEquals(0x0 , mem.getA());
-		assertEquals(0x0, mem.getPC());
-		assertEquals(0xffff, mem.getAddress(mem.SP));
+		assertEquals(0xd001, mem.getAddress((char) 0x0000));
+		assertEquals(0x0 , cpu.getA());
+		assertEquals(0x0, cpu.getPC());
+		assertEquals(0xffff, cpu.getSP());
 		
 		
 		/*
@@ -59,8 +59,8 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 1
 		 */
 		cpu.step();
-		assertEquals(0x13, mem.getA());	
-		assertEquals(0x1, mem.getPC());
+		assertEquals(0x13, cpu.getA());	
+		assertEquals(0x1, cpu.getPC());
 		assertEquals(1, cpu.getCycles());
 		
 		
@@ -73,9 +73,9 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 2
 		 */
 		cpu.step();
-		assertEquals(0x13, mem.getA());	
-		assertEquals(0x04, mem.getB());	
-		assertEquals(0x2, mem.getPC());
+		assertEquals(0x13, cpu.getA());	
+		assertEquals(0x04, cpu.getB());	
+		assertEquals(0x2, cpu.getPC());
 		assertEquals(2, cpu.getCycles());
 		
 		
@@ -88,9 +88,9 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 4
 		 */
 		cpu.step();
-		assertEquals(0x13, mem.getA());	
-		assertEquals(0x17, mem.getB());	
-		assertEquals(0x3, mem.getPC());
+		assertEquals(0x13, cpu.getA());	
+		assertEquals(0x17, cpu.getB());	
+		assertEquals(0x3, cpu.getPC());
 		assertEquals(4, cpu.getCycles());
 		
 		
@@ -103,9 +103,9 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 6
 		 */
 		cpu.step();
-		assertEquals(0x13, mem.getA());	
-		assertEquals(0x11, mem.getB());	
-		assertEquals(0x4, mem.getPC());
+		assertEquals(0x13, cpu.getA());	
+		assertEquals(0x11, cpu.getB());	
+		assertEquals(0x4, cpu.getPC());
 		assertEquals(6, cpu.getCycles());
 		
 		/*
@@ -117,9 +117,9 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 8
 		 */
 		cpu.step();
-		assertEquals(0x143, mem.getA());	
-		assertEquals(0x11, mem.getB());	
-		assertEquals(0x5, mem.getPC());
+		assertEquals(0x143, cpu.getA());	
+		assertEquals(0x11, cpu.getB());	
+		assertEquals(0x5, cpu.getPC());
 		assertEquals(8, cpu.getCycles());
 		
 		/*
@@ -132,10 +132,10 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 12
 		 */
 		cpu.step();
-		assertEquals(0x0a, mem.getA());	
-		assertEquals(0x11, mem.getB());	
-		assertEquals(0x1800, mem.getEX());
-		assertEquals(0x7, mem.getPC());
+		assertEquals(0x0a, cpu.getA());	
+		assertEquals(0x11, cpu.getB());	
+		assertEquals(0x1800, cpu.getEX());
+		assertEquals(0x7, cpu.getPC());
 		assertEquals(12, cpu.getCycles());
 		
 		/*
@@ -148,10 +148,10 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 15
 		 */
 		cpu.step();
-		assertEquals(0x0a, mem.getA());	
-		assertEquals(0x07, mem.getB());	
-		assertEquals(0x1800, mem.getEX());
-		assertEquals(0x8, mem.getPC());
+		assertEquals(0x0a, cpu.getA());	
+		assertEquals(0x07, cpu.getB());	
+		assertEquals(0x1800, cpu.getEX());
+		assertEquals(0x8, cpu.getPC());
 		assertEquals(15, cpu.getCycles());
 		
 		/*
@@ -164,10 +164,10 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 16
 		 */
 		cpu.step();
-		assertEquals(0x0a, mem.getA());	
-		assertEquals(0x05, mem.getB());	
-		assertEquals(0x1800, mem.getEX());
-		assertEquals(0x9, mem.getPC());
+		assertEquals(0x0a, cpu.getA());	
+		assertEquals(0x05, cpu.getB());	
+		assertEquals(0x1800, cpu.getEX());
+		assertEquals(0x9, cpu.getPC());
 		assertEquals(16, cpu.getCycles());
 		
 		/*
@@ -180,10 +180,10 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 17
 		 */
 		cpu.step();
-		assertEquals(0x0a, mem.getA());	
-		assertEquals(0x15, mem.getB());	
-		assertEquals(0x1800, mem.getEX());
-		assertEquals(0xa, mem.getPC());
+		assertEquals(0x0a, cpu.getA());	
+		assertEquals(0x15, cpu.getB());	
+		assertEquals(0x1800, cpu.getEX());
+		assertEquals(0xa, cpu.getPC());
 		assertEquals(17, cpu.getCycles());
 		
 		
@@ -198,12 +198,12 @@ public class DCPUTest extends TestCase {
 		 *      [SP] = 0x3	 
 		 */
 		cpu.step();
-		assertEquals(0x0a, mem.getA());	
-		assertEquals(0x15, mem.getB());	
-		assertEquals(0x1800, mem.getEX());
-		assertEquals(0xb, mem.getPC());
+		assertEquals(0x0a, cpu.getA());	
+		assertEquals(0x15, cpu.getB());	
+		assertEquals(0x1800, cpu.getEX());
+		assertEquals(0xb, cpu.getPC());
 		assertEquals(18, cpu.getCycles());
-		assertEquals(0x3, mem.stackPeek(0));
+		assertEquals(0x3, mem.getAddress(cpu.getSP()));
 		
 		/*
 		 * Runs "SET PC, POP"
@@ -215,10 +215,10 @@ public class DCPUTest extends TestCase {
 		 * 		cycles = 19
 		 */
 		cpu.step();
-		assertEquals(0x0a, mem.getA());	
-		assertEquals(0x15, mem.getB());	
-		assertEquals(0x1800, mem.getEX());
-		assertEquals(0x3, mem.getPC());
+		assertEquals(0x0a, cpu.getA());	
+		assertEquals(0x15, cpu.getB());	
+		assertEquals(0x1800, cpu.getEX());
+		assertEquals(0x3, cpu.getPC());
 		assertEquals(18, cpu.getCycles());
 		
 		/*
@@ -228,10 +228,7 @@ public class DCPUTest extends TestCase {
 	
 	@Test
 	public void testMemoryRanges() {
-		mem.setAddress(0x3000, 0x30);
-		assertEquals(0x30, mem.getAddress(0x3000));
-		
-		exception.expect(IndexOutOfBoundsException.class);
-		mem.setAddress(0x123456, 0x0);
+		mem.setAddress((char) 0x3000, (char) 0x30);
+		assertEquals(0x30, mem.getAddress((char) 0x3000));
 	}
 }

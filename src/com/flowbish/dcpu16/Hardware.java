@@ -30,12 +30,12 @@ public abstract class Hardware {
 	 * <code>X+(Y&lt;&lt;16)</code> is a 32 bit word identifying the manufacturer 
 	 */
 	public final void query() {
-		getCPU().getMemory().setA(hardwareID & 0xffff);
-		getCPU().getMemory().setB((hardwareID>>16) & 0xffff);
+		getCPU().setA((char) (hardwareID & 0xffff));
+		getCPU().setB((char) ((hardwareID>>16) & 0xffff));
 		
-		getCPU().getMemory().setC(hardwareVersion);
+		getCPU().setC((char) hardwareVersion);
 		
-		getCPU().getMemory().setX(manufacturer & 0xffff);
-		getCPU().getMemory().setY((manufacturer>>16) & 0xffff);
+		getCPU().setX((char) (manufacturer & 0xffff));
+		getCPU().setY((char) ((manufacturer>>16) & 0xffff));
 	}
 }

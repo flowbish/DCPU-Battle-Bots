@@ -1,6 +1,7 @@
 package com.flowbish.dcpu16;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * CPU of the DCPU-16
@@ -10,8 +11,12 @@ import java.util.ArrayList;
  */
 public class DCPU {
 	private Memory memory;
-	private ArrayList<Hardware> hardware;	
+	private char[] registers;
+	private char SP;
+	private char PC;
+	private char EX;
 	private long cycles;
+	private List<Hardware> hardware;	
 	
 	public DCPU() {
 		memory = new Memory();
@@ -29,17 +34,29 @@ public class DCPU {
 			char value = (char) ((program[i]) << 8);
 			if (i + 1 < program.length)
 				value += program[i+1];
-			memory.setAddress(i/2, value);
+			memory.setAddress((char) (i/2), value);
 		}
 	}
 	
-	public void reset() {
+	private void reset() {
 		memory = new Memory();
+		registers = new char[8];
+		SP = 0xffff;
+		PC = 0x0;
+		EX = 0x0;
 		cycles = 0;
+		
+		hardware = new ArrayList<Hardware>();
+	}
+	
+	private char nextWord() {
+		char addr = getPC();
+		setPC((char) (addr + 1));
+		return memory.getAddress(addr);
 	}
 	
 	public void step() {
-		char instruction = memory.nextWord();
+		char instruction = nextWord();
 		char opcode = (char) (instruction & 0x1f);
 		if (opcode != 0x0) { // Basic Opcode
 			char b = (char)((instruction >> 5) & 0x1f);
@@ -60,72 +77,70 @@ public class DCPU {
 	 * @param a - the a value of the instruction (upper 6 bits)
 	 */
 	private void basicOp(char opcode, char b, char a) {
-		int b_addr = operand(b);
-		int a_addr = operand(a);
-		char b_value = memory.getAddress(b_addr);
-		char a_value = memory.getAddress(a_addr);
+		Writable aop = operand(a);
+		Writable bop = operand(b);
 		switch(opcode) {
 		// SET b, a
 		case 0x01:
-			memory.setAddress(b_addr, a_value);
+			bop.write(aop.read());
 			cycles += 1;
 			break;
 		// ADD b, a
 		case 0x02:
-			int sum = b_value + a_value;
+			int sum = bop.read() + aop.read();
 			if (sum > 0xffff) 
-				memory.setAddress(memory.EX, 0x0001);
+				setEX((char) 0x0001);
 			else
-				memory.setAddress(memory.EX, 0x0000);
-			memory.setAddress(b_addr, sum);
+				setEX((char) 0x0000);
+			bop.write((char) sum);
 			cycles += 2;
 			break;
 		// SUB b, a
 		case 0x03:
-			int dif = b_value - a_value;
+			int dif = bop.read() - aop.read();
 			if (dif < 0x0) 
-				memory.setAddress(memory.EX, 0xffff);
+				setEX((char) 0xffff);
 			else
-				memory.setAddress(memory.EX, 0x0000);
-			memory.setAddress(b_addr, dif);
+				setEX((char) 0x0000);
+			bop.write((char) dif);
 			cycles += 2;
 			break;
 		// MUL b, a
 		case 0x04:
-			int prod = b_value * a_value;
-			memory.setAddress(memory.EX, (prod >> 16) & 0xffff);
-			memory.setAddress(b_addr, prod);
+			int prod = bop.read() * aop.read();
+			setEX((char) ((prod >> 16) & 0xffff));
+			bop.write((char) prod);
 			cycles += 2;
 			break;
 		// DIV b, a
 		case 0x06:
-			int div = b_value / a_value;
-			if (a != 0x0) {
-				memory.setEX(((b_value << 16) / a_value) & 0xffff);
-				memory.setAddress(b_addr, div);
+			int div = bop.read() / aop.read();
+			if (aop.read() != 0x0) {
+				setEX((char) (((bop.read() << 16) / aop.read()) & 0xffff));
+				bop.write((char) div);
 			}
 			else {
-				memory.setAddress(memory.EX, 0x0000);
-				memory.setAddress(b_addr, 0x0);
+				setEX((char) 0x0000);
+				bop.write((char) 0x0);
 			}
 			cycles += 3;
 			break;
 		// MOD b, a
 		case 0x08:
-			if (a_value == 0)
-				memory.setAddress(b_addr, 0);
+			if (aop.read() == 0)
+				bop.write((char) 0x0);
 			else
-				memory.setAddress(b_addr, b_value % a_value);
+				bop.write((char) (bop.read() % aop.read()));
 			cycles += 3;
 			break;
 		// AND b, a
 		case 0x0a:
-			memory.setAddress(b_addr, a_value & b_value);
+			bop.write((char) (bop.read() & aop.read()));
 			cycles += 1;
 			break;
 		// BOR b, a
 		case 0x0b:
-			memory.setAddress(b_addr, a_value | b_value);
+			bop.write((char) (bop.read() | aop.read()));
 			cycles += 1;
 			break;
 		}
@@ -137,61 +152,170 @@ public class DCPU {
 	 * @param a - the a value of the instruction (upper 6 bits)
 	 */
 	private void nonBasicOp(char opcode, char a) {
-		int a_addr = operand(a);
-		char a_value = memory.getAddress(a_addr);
+		Writable aop = operand(a);
 		switch (opcode) {
 		// JSR a
 		case 0x01:
-			memory.stackPush(memory.getPC() + 1);
-			memory.setPC(a_value);
-			cycles += 3;
 			break;
 		}
 	}
 	
-	/**
-	 * Returns a memory address that contains the value of the specified operand.
-	 * @param a  operand
-	 * @return memory address to access <code>a<code>
-	 */
-	private int operand(char a) {
+	private Writable operand(final char a) {
+		//register[A,B,C,X,Y,Z,I,J]
 		if (a < 0x8) {
-			return memory.MEMORY_SIZE + a;
+			return new Writable() {
+				public void write(char value) {
+					registers[a] = value;
+					
+				}
+				public char read() {
+					return registers[a];
+				}
+			};
 		}
+		// [register]
 		else if (a < 0x10) {
-			return memory.getAddress(memory.MEMORY_SIZE + a - 0x8);
+			final int r = a - 0x8;
+			return new Writable() {
+				public void write(char value) {
+					memory.setAddress(registers[r], value);
+					
+				}
+				public char read() {
+					return memory.getAddress(registers[r]);
+				}
+			};
 		}
+		// [register + next word]
 		else if (a < 0x18) {
-			char word =memory.nextWord();
-			return memory.getAddress(memory.MEMORY_SIZE + a - 0x10) + word;
+			final char word = nextWord();
+			final int r = a - 0x10;
+			return new Writable() {
+				public void write(char value) {
+					memory.setAddress((char) (registers[r] + word), value);
+					
+				}
+				public char read() {
+					return memory.getAddress((char) (registers[r] + word));
+				}
+			};
 		}
+		// PUSH or POP
+		else if (a == 0x18) {
+			return new Writable() {
+				private Character data = null;
+				public void write(char value) { // PUSH
+					char sp = (char) (getSP() - 1);
+					setSP(sp);
+					memory.setAddress(sp, value);
+				}
+				public char read() { // POP
+					if (data == null) {
+						char sp = getSP();
+						setSP((char) (sp + 1));
+						data = memory.getAddress(sp);
+					}
+					return data;
+				}
+			};
+		}
+		// PEEK
+		else if (a == 0x19) {
+			return new Writable() {
+				public void write(char value) {
+					memory.setAddress(getSP(), value);
+				}
+				public char read() {
+					return memory.getAddress(getSP());
+				}
+			};
+		}
+		// PICK n
+		else if (a == 0x1a) {
+			cycles += 1;
+			final char word = nextWord();
+			return new Writable() {
+				public void write(char value) {
+					memory.setAddress((char) (getSP() + word), value);
+				}
+				public char read() {
+					return memory.getAddress((char) (getSP() + word));
+				}
+			};
+		}
+		// SP
 		else if (a == 0x1b) {
-			return memory.SP;
+			return new Writable() {
+				public void write(char value) {
+					setSP(value);
+				}
+				public char read() {
+					return getSP();
+				}
+			};
 		}
+		// PC
 		else if (a == 0x1c) {
-			return memory.PC;
+			return new Writable() {
+				public void write(char value) {
+					setPC(value);
+				}
+				public char read() {
+					return getPC();
+				}
+			};
 		}
+		// EX
 		else if (a == 0x1d) {
-			return memory.EX;
+			return new Writable() {
+				public void write(char value) {
+					setEX(value);
+				}
+				public char read() {
+					return getEX();
+				}
+			};
 		}
+		// [next word]
 		else if (a  == 0x1e) {
-			char pc = memory.getPC();
-			memory.setPC(pc + 1);
 			cycles += 1;
-			return memory.getAddress(pc);
+			final char word = nextWord();
+			return new Writable() {
+				public void write(char value) {
+					memory.setAddress(word, value);
+				}
+				public char read() {
+					return memory.getAddress(word);
+				}
+			};
 		}
+		// next word
 		else if (a  == 0x1f) {
-			char pc = memory.getPC();
-			memory.setPC(pc + 1);
 			cycles += 1;
-			return pc;
+			final char word = nextWord();
+			return new Writable() {
+				public void write(char value) {
+					// Literal Assignment
+				}
+				public char read() {
+					return word;
+				}
+			};
 		}
+		// values [0xffff,0x1e]
 		else {
-			a -= 0x21;
-			memory.setAddress(memory.A_TEMP, a);
-			return memory.A_TEMP;
+			final int r = a - 0x21;
+			return new Writable() {
+				public void write(char value) {
+					// Cannot write to a literal
+				}
+				public char read() {
+					return (char) r;
+				}
+			};
 		}
 	}
+	
 	
 	/**
 	 * Send an interrupt to the DCPU
@@ -208,7 +332,72 @@ public class DCPU {
 	public Memory getMemory() {
 		return memory;
 	}
-	
+	public char getA() {
+		return registers[0];
+	}
+	public void setA(char value) {
+		registers[0] = value;
+	}
+	public char getB() {
+		return registers[1];
+	}
+	public void setB(char value) {
+		registers[1] = value;
+	}
+	public char getC() {
+		return registers[2];
+	}
+	public void setC(char value) {
+		registers[2] = value;
+	}
+	public char getX() {
+		return registers[3];
+	}
+	public void setX(char value) {
+		registers[3] = value;
+	}
+	public char getY() {
+		return registers[4];
+	}
+	public void setY(char value) {
+		registers[4] = value;
+	}
+	public char getZ() {
+		return registers[5];
+	}
+	public void setZ(char value) {
+		registers[5] = value;
+	}
+	public char getI() {
+		return registers[6];
+	}
+	public void setI(char value) {
+		registers[6] = value;
+	}
+	public char getJ() {
+		return registers[7];
+	}
+	public void setJ(char value) {
+		registers[7] = value;
+	}
+	public char getSP() {
+		return SP;
+	}
+	public void setSP(char value) {
+		SP = value;
+	}
+	public char getPC() {
+		return PC;
+	}
+	public void setPC(char value) {
+		PC = value;
+	}
+	public char getEX() {
+		return EX;
+	}
+	public void setEX(char value) {
+		EX = value;
+	}
 	public long getCycles() {
 		return cycles;
 	}
