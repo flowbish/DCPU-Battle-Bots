@@ -221,7 +221,7 @@ public class DCPUTest extends TestCase {
 		assertEquals(0x15, cpu.getB());	
 		assertEquals(0x1800, cpu.getEX());
 		assertEquals(0x3, cpu.getPC());
-		assertEquals(18, cpu.getCycles());
+		assertEquals(19, cpu.getCycles());
 		
 		/*
 		 * TODO: Test JSR, SP, PC, EX, word, [word]
