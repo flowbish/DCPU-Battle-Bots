@@ -86,38 +86,39 @@ public class DCPU {
 		switch(opcode) {
 		// SET b, a
 		case 0x01:
-			bop.write(aop.read());
 			cycles += 1;
+			bop.write(aop.read());
 			break;
 		// ADD b, a
 		case 0x02:
+			cycles += 2;
 			int sum = bop.read() + aop.read();
 			if (sum > 0xffff) 
 				setEX((char) 0x0001);
 			else
 				setEX((char) 0x0000);
 			bop.write((char) sum);
-			cycles += 2;
 			break;
 		// SUB b, a
 		case 0x03:
+			cycles += 2;
 			int dif = bop.read() - aop.read();
 			if (dif < 0x0) 
 				setEX((char) 0xffff);
 			else
 				setEX((char) 0x0000);
 			bop.write((char) dif);
-			cycles += 2;
 			break;
 		// MUL b, a
 		case 0x04:
+			cycles += 2;
 			int prod = bop.read() * aop.read();
 			setEX((char) ((prod >> 16) & 0xffff));
 			bop.write((char) prod);
-			cycles += 2;
 			break;
 		// DIV b, a
 		case 0x06:
+			cycles += 3;
 			int div = bop.read() / aop.read();
 			if (aop.read() != 0x0) {
 				setEX((char) (((bop.read() << 16) / aop.read()) & 0xffff));
@@ -127,25 +128,24 @@ public class DCPU {
 				setEX((char) 0x0000);
 				bop.write((char) 0x0);
 			}
-			cycles += 3;
 			break;
 		// MOD b, a
 		case 0x08:
+			cycles += 3;
 			if (aop.read() == 0)
 				bop.write((char) 0x0);
 			else
 				bop.write((char) (bop.read() % aop.read()));
-			cycles += 3;
 			break;
 		// AND b, a
 		case 0x0a:
-			bop.write((char) (bop.read() & aop.read()));
 			cycles += 1;
+			bop.write((char) (bop.read() & aop.read()));
 			break;
 		// BOR b, a
 		case 0x0b:
-			bop.write((char) (bop.read() | aop.read()));
 			cycles += 1;
+			bop.write((char) (bop.read() | aop.read()));
 			break;
 		}
 	}
