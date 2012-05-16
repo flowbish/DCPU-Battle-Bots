@@ -32,8 +32,12 @@ public class DCPU {
 	public void loadProgram(byte[] program) {
 		for (int i = 0; i < program.length; i += 2) {
 			char value = (char) ((program[i]) << 8);
-			if (i + 1 < program.length)
-				value += program[i+1];
+			if (i + 1 < program.length) {
+				if (program[i+1] >= 0)
+					value += program[i+1];
+				else
+					value += program[i+1] + 0x100;
+			}
 			memory.setAddress((char) (i/2), value);
 		}
 	}
