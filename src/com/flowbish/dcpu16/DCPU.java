@@ -164,6 +164,26 @@ public class DCPU {
 			bop.write((char) (bop.read() << aop.read()));
 			setEX((char) (((bop.read() << aop.read()) >> 16) & 0xffff));
 			break;
+		// ADX b, a
+		case 0x1a:
+			cycles += 3;
+			int sx = bop.read() + aop.read() + getEX();
+			if (sx > 0xffff) 
+				setEX((char) 0x0001);
+			else
+				setEX((char) 0x0000);
+			bop.write((char) sx);
+			break;
+		// SBX b, a
+		case 0x1b:
+			cycles += 3;
+			int dx = bop.read() - aop.read() + getEX();
+			if (dx < 0x0) 
+				setEX((char) 0xffff);
+			else
+				setEX((char) 0x0000);
+			bop.write((char) dx);
+			break;
 		}
 	}
 	
