@@ -252,9 +252,7 @@ public class DCPU {
 				}
 				public char read() { // POP
 					if (data == null) {
-						char sp = getSP();
-						setSP((char) (sp + 1));
-						data = memory.getAddress(sp);
+						data = stackPop();
 					}
 					return data;
 				}
@@ -430,6 +428,11 @@ public class DCPU {
 	private void stackPush(char value) {
 		setSP((char) (getSP() - 1));
 		memory.setAddress(getSP(), value);
+	}
+	private char stackPop() {
+		char sp = getSP();
+		setSP((char) (sp + 1));
+		return memory.getAddress(sp);
 	}
 	public char getPC() {
 		return PC;
