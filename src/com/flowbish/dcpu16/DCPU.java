@@ -147,6 +147,23 @@ public class DCPU {
 			cycles += 1;
 			bop.write((char) (bop.read() | aop.read()));
 			break;
+		// XOR b, a
+		case 0x0c:
+			cycles += 1;
+			bop.write((char) (bop.read() ^ aop.read()));
+			break;
+		// SHR b, a
+		case 0x0d:
+			cycles += 1;
+			bop.write((char) (bop.read() >> aop.read()));
+			setEX((char) (((bop.read() << 16) >> aop.read()) & 0xffff));
+			break;
+		// SHL b, a
+		case 0x0f:
+			cycles += 1;
+			bop.write((char) (bop.read() << aop.read()));
+			setEX((char) (((bop.read() << aop.read()) >> 16) & 0xffff));
+			break;
 		}
 	}
 	
