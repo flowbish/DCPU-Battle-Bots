@@ -197,6 +197,8 @@ public class DCPU {
 		switch (opcode) {
 		// JSR a
 		case 0x01:
+			stackPush((char) (getPC() + 1));
+			setPC(aop.read());
 			break;
 		}
 	}
@@ -246,9 +248,7 @@ public class DCPU {
 			return new Writable() {
 				private Character data = null;
 				public void write(char value) { // PUSH
-					char sp = (char) (getSP() - 1);
-					setSP(sp);
-					memory.setAddress(sp, value);
+					stackPush(value);
 				}
 				public char read() { // POP
 					if (data == null) {
@@ -426,6 +426,10 @@ public class DCPU {
 	}
 	public void setSP(char value) {
 		SP = value;
+	}
+	private void stackPush(char value) {
+		setSP((char) (getSP() - 1));
+		memory.setAddress(getSP(), value);
 	}
 	public char getPC() {
 		return PC;
