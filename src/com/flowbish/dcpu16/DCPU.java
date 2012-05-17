@@ -432,6 +432,11 @@ public class DCPU {
 		//TODO: 
 	}
 	
+	public void addHardware(Hardware h) {
+		h.setCPU(this);
+		hardware.add(h);
+	}
+	
 	/**
 	 * Returns instance of Memory used by this CPU
 	 * @return instance of Memory used by this CPU
