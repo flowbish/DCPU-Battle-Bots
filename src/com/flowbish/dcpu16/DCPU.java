@@ -266,7 +266,7 @@ public class DCPU {
 		// HWI a
 		case 0x12:
 			cycles += 4;
-			hardware.get(aop.read()).inturrupt();
+			hardware.get(aop.read()).interrupt();
 			break;
 		}
 	}

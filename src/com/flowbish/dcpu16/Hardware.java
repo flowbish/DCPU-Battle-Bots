@@ -19,9 +19,9 @@ public abstract class Hardware {
 		hardwareVersion = 0;
 	}
 	
-	public abstract void inturrupt();
+	public abstract void interrupt();
 	
-	protected final void pushInturrupt(char message) {
+	protected final void pushInterrupt(char message) {
 		cpu.sendInterrupt(message);
 	}
 	
