@@ -13,8 +13,10 @@ public abstract class Hardware {
 		hardwareVersion = 0;
 	}
 	
-	public DCPU getCPU() {
-		return cpu;
+	public Hardware() {
+		manufacturer = 0;
+		hardwareID = 0;
+		hardwareVersion = 0;
 	}
 	
 	public abstract void inturrupt();
@@ -23,19 +25,11 @@ public abstract class Hardware {
 		cpu.sendInterrupt(message);
 	}
 	
-	/**
-	 * Sends the query data to the DCPU  <br>
-	 * <code>A+(B&lt;&lt;16)</code> is a 32 bit word identifying the hardware id  <br>
-	 * <code>C</code> is the hardware version  <br>
-	 * <code>X+(Y&lt;&lt;16)</code> is a 32 bit word identifying the manufacturer 
-	 */
-	public final void query() {
-		getCPU().setA((char) (hardwareID & 0xffff));
-		getCPU().setB((char) ((hardwareID>>16) & 0xffff));
-		
-		getCPU().setC((char) hardwareVersion);
-		
-		getCPU().setX((char) (manufacturer & 0xffff));
-		getCPU().setY((char) ((manufacturer>>16) & 0xffff));
+	public DCPU getCPU() {
+		return cpu;
+	}
+	
+	public void setCPU(DCPU value) {
+		cpu = value;
 	}
 }

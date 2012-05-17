@@ -168,6 +168,17 @@ public class DCPU {
 			bop.write((char) (bop.read() << aop.read()));
 			setEX((char) (((bop.read() << aop.read()) >> 16) & 0xffff));
 			break;
+		// IFB b, a
+		case 0x10:
+			cycles += 1;
+			boolean result = (bop.read() & aop.read()) != 0;
+			if (result) 
+				break;
+			else {
+				// TODO: Chain conditionals
+				nextWord();
+			}
+			break;
 		// ADX b, a
 		case 0x1a:
 			cycles += 3;
@@ -243,7 +254,14 @@ public class DCPU {
 		// HWQ a
 		case 0x11:
 			cycles += 4;
-			hardware.get(aop.read()).query();
+			Hardware h = hardware.get(aop.read());
+			setA((char) (h.hardwareID & 0xffff));
+			setB((char) ((h.hardwareID>>16) & 0xffff));
+			
+			setC((char) h.hardwareVersion);
+			
+			setX((char) (h.manufacturer & 0xffff));
+			setY((char) ((h.manufacturer>>16) & 0xffff));
 			break;
 		// HWI a
 		case 0x12:
