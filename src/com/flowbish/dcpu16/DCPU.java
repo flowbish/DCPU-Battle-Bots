@@ -197,8 +197,14 @@ public class DCPU {
 		switch (opcode) {
 		// JSR a
 		case 0x01:
+			cycles += 3;
 			stackPush((char) (getPC() + 1));
 			setPC(aop.read());
+			break;
+		// INT a
+		case 0x08:
+			cycles += 4;
+			sendInterrupt(aop.read());
 			break;
 		}
 	}

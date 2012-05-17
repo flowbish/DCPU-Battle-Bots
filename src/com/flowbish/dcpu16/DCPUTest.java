@@ -31,10 +31,8 @@ public class DCPUTest extends TestCase {
 			program = new byte[(int) file.length()];
 			file.read(program);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		cpu.loadProgram(program);
@@ -224,7 +222,7 @@ public class DCPUTest extends TestCase {
 		assertEquals(19, cpu.getCycles());
 		
 		/*
-		 * TODO: Test JSR, SP, PC, EX, word, [word]
+		 * TODO: Test JSR, EX, word, [word], SHL, SHR, ADX, SBX
 		 */
 	}
 	
