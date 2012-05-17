@@ -1,5 +1,11 @@
 package com.dedovic.bots;
 
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.World;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -8,45 +14,44 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
 public class Bot {
-	protected float xPos, yPos;
-	private int health;
+	private int health, rotation;
 	private Shape body;
+	private World world;
+	private BodyDef botBodyDef;
+	private PolygonShape botShape;
+	private Body botBody;
+	private FixtureDef botFixtureDef;
+	protected float xPos, yPos;
 	
-	public Bot(float x, float y){
+	public Bot(float x, float y, World world){
 		xPos = x;
 		yPos = y;
 		health = 100;
-		body = new Rectangle(x, y, 50, 50);
+		
+		this.world = world;
+		botBodyDef = new BodyDef();
+		botBodyDef.type = BodyType.DYNAMIC;
+		botBodyDef.position.set(x, y);
+		botBody = world.createBody(botBodyDef);
+		botShape = new PolygonShape();
+		botShape.setAsBox(1f, 1f);
+		
+		botFixtureDef = new FixtureDef();
+		botFixtureDef.shape = botShape;
+		botFixtureDef.density = 1f;
+		botFixtureDef.friction = .3f;
+		botFixtureDef.restitution = .5f;
+		botBody.createFixture(botFixtureDef);
 	}
 	
 	public void update(GameContainer container, int delta) throws SlickException {
-		body.setX(xPos);
-		body.setY(yPos);
+		//TODO: Death handling
+		//TODO: Collision handling
+		//TODO: Act
+			
 	}
 	public void render(GameContainer container, Graphics g) throws SlickException {
 		g.setColor(new Color(health, health, health));
 		g.fill(body);
-	}
-	
-	/**
-	 * Check if this bot interests with the body of the provided bot
-	 * @param bot - The bot to check if it intersects with this one
-	 * @return True if the bots do intersect, false otherwise
-	 */
-	public boolean intesects(Bot bot){
-		return this.body.intersects(bot.body);
-	}
-	/**
-	 * Decrements health by 1 unit
-	 */
-	public void collide() {
-		health--;		
-	}	
-	/**
-	 * Check if health is at or below 0
-	 * @return True if health is at or below 0, false otherwise
-	 */
-	public boolean isDead(){
-		return health <= 0;
 	}
 }
