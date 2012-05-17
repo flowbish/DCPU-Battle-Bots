@@ -15,6 +15,7 @@ public class DCPU {
 	private char SP;
 	private char PC;
 	private char EX;
+	private char IA;
 	private long cycles;
 	private List<Hardware> hardware;	
 	
@@ -205,6 +206,16 @@ public class DCPU {
 		case 0x08:
 			cycles += 4;
 			sendInterrupt(aop.read());
+			break;
+		// IAG a
+		case 0x09:
+			cycles += 1;
+			aop.write(getIA());
+			break;
+		// IAS a:
+		case 0x0a:
+			cycles += 1;
+			setIA(aop.read());
 			break;
 		}
 	}
@@ -451,6 +462,12 @@ public class DCPU {
 	}
 	public void setEX(char value) {
 		EX = value;
+	}
+	public char getIA() {
+		return IA;
+	}
+	public void setIA(char value) {
+		IA = value;
 	}
 	public long getCycles() {
 		return cycles;
