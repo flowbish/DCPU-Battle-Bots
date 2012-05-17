@@ -17,6 +17,7 @@ public class DCPU {
 	private char EX;
 	private char IA;
 	private long cycles;
+	private boolean queueing;
 	private List<Hardware> hardware;	
 	
 	public DCPU() {
@@ -49,7 +50,9 @@ public class DCPU {
 		SP = 0x0;
 		PC = 0x0;
 		EX = 0x0;
+		IA = 0x0;
 		cycles = 0;
+		queueing = false;
 		
 		hardware = new ArrayList<Hardware>();
 	}
@@ -212,10 +215,40 @@ public class DCPU {
 			cycles += 1;
 			aop.write(getIA());
 			break;
-		// IAS a:
+		// IAS a
 		case 0x0a:
 			cycles += 1;
 			setIA(aop.read());
+			break;
+		// RFI a
+		case 0x0b:
+			cycles += 3;
+			setA(stackPop());
+			setPC(stackPop());
+			queueing = false;
+			break;
+		// IAQ a
+		case 0x0c:
+			cycles += 2;
+			if (aop.read() > 0)
+				queueing = true;
+			else
+				queueing = false;
+			break;
+		// HWN a
+		case 0x10:
+			cycles += 2;
+			aop.write((char) hardware.size());
+			break;
+		// HWQ a
+		case 0x11:
+			cycles += 4;
+			hardware.get(aop.read()).query();
+			break;
+		// HWI a
+		case 0x12:
+			cycles += 4;
+			hardware.get(aop.read()).inturrupt();
 			break;
 		}
 	}
