@@ -18,7 +18,9 @@ public class DCPU {
 	private char IA;
 	private long cycles;
 	private boolean queueing;
+	
 	private List<Hardware> hardware;	
+	private List<Character> interrupts;
 	
 	public DCPU() {
 		memory = new Memory();
@@ -55,6 +57,7 @@ public class DCPU {
 		queueing = false;
 		
 		hardware = new ArrayList<Hardware>();
+		interrupts = new ArrayList<Character>();
 	}
 	
 	private char nextWord() {
@@ -64,6 +67,11 @@ public class DCPU {
 	}
 	
 	public void step() {
+		if (!queueing && interrupts.size() > 0) {
+			stackPush((char) (getPC() + 1));
+			stackPush(getA());
+			setPC(interrupts.remove(0));
+		}
 		char instruction = nextWord();
 		char opcode = (char) (instruction & 0x1f);
 		if (opcode != 0x0) { // Basic Opcode
@@ -429,7 +437,7 @@ public class DCPU {
 	 * @param message - 16 bit word message
 	 */
 	public void sendInterrupt(char message) {
-		//TODO: 
+		interrupts.add(message);
 	}
 	
 	public void addHardware(Hardware h) {
