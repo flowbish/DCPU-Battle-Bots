@@ -7,18 +7,15 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
 public class Runner extends BasicGame{
-	private static int width = 1000;
-	private static int height = 1000;
+	private static int width = 750;
+	private static int height = 750;
 	private GameState state;
-	private World world;
+	private Arena world;
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		state = GameState.RUNNING;
-		world = new World(container);
-		world.add(new Bot(50, 50));
-		world.add(new Bot(250, 250));
-		world.add(new BotPlayer(350, 350));
+		world = new Arena(container);
 	}
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
