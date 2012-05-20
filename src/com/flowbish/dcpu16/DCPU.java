@@ -70,7 +70,8 @@ public class DCPU {
 		if (!queueing && interrupts.size() > 0) {
 			stackPush((char) (getPC() + 1));
 			stackPush(getA());
-			setPC(interrupts.remove(0));
+			setPC(getIA());
+			setA(interrupts.remove(0));
 		}
 		char instruction = nextWord();
 		char opcode = (char) (instruction & 0x1f);
