@@ -13,15 +13,6 @@ public class BotPlayer extends Bot {
 	
 	public void update(GameContainer container, int delta) throws SlickException {
 		Input input = container.getInput();
-		
-		if(input.isKeyDown(Input.KEY_W))
-			yPos--;
-		if(input.isKeyDown(Input.KEY_S))
-			yPos++;
-		if(input.isKeyDown(Input.KEY_D))
-			xPos++;
-		if(input.isKeyDown(Input.KEY_A))
-			xPos--;
 		super.update(container, delta);
 	}
 
