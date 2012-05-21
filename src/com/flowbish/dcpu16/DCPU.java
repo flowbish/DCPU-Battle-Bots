@@ -188,6 +188,17 @@ public class DCPU {
 				nextWord();
 			}
 			break;
+		// IFE b, a
+		case 0x12:
+			cycles += 1;
+			result = (bop.read() == aop.read());
+			if (result) 
+				break;
+			else {
+				// TODO: Chain conditionals
+				nextWord();
+			}
+			break;
 		// ADX b, a
 		case 0x1a:
 			cycles += 3;
