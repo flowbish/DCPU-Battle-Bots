@@ -68,7 +68,7 @@ public class DCPU {
 	
 	public void step() {
 		if (!queueing && interrupts.size() > 0) {
-			stackPush((char) (getPC() + 1));
+			stackPush((char) (getPC()));
 			stackPush(getA());
 			setPC(getIA());
 			setA(interrupts.remove(0));
