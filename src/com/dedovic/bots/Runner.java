@@ -6,11 +6,15 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import com.flowbish.dcpu16.DCPU;
+
 public class Runner extends BasicGame{
 	private static int width = 750;
 	private static int height = 750;
 	private GameState state;
 	private Arena world;
+	
+	private DCPU cpu;
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
